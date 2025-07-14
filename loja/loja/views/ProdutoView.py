@@ -118,7 +118,6 @@ def create_produto_view(request, id=None):
         msgPromocao = request.POST.get("msgPromocao")
         preco = request.POST.get("preco")
         image = request.POST.get("image")
-        print("postback-create")
         print(produto)
         print(destaque)
         print(promocao)
