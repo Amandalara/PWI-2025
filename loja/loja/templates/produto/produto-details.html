@@ -10,7 +10,7 @@
         <!-- <form method="POST" action= "/produto/edit" >
         {% csrf_token %}-->
         <div class="row">
-        <!--<input type="hidden" value="{{produto.id}}" name="id">-->
+            <!--<input type="hidden" value="{{produto.id}}" name="id">-->
             <h5 for="Produto" class="col-md-2">Produto</h5>
             <input value="{{produto.Produto}}" name="Produto" disabled>
         </div>
@@ -42,10 +42,37 @@
             <img class="border border-secondary" width="200px"
             src="/media/{{produto.image}}"/>
         </div>
-        <div class="row">
+        
+        <!-- Categoria select desabilitado -->
+        <div class="row mt-3">
+            <label class="col-md-2">Categoria</label>
+            <select disabled class="col-md-4">
+                {% for cate in categorias %}
+                    <option value="{{ cate.id }}" {% if produto.categoria_id == cate.id %}selected{% endif %}>
+                        {{ cate.Categoria }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <!-- Fabricante select desabilitado -->
+        <div class="row mt-3">
+            <label class="col-md-2">Fabricante</label>
+            <select disabled class="col-md-4">
+                {% for fabri in fabricantes %}
+                    <option value="{{ fabri.id }}" {% if produto.fabricante_id == fabri.id %}selected{% endif %}>
+                        {{ fabri.Fabricante }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="row mt-3">
             <!--<button type="submit" class="btn btn-danger col-md-2 mt-3
             mr-2"><i class="fa fa-check"></i> Salvar</button>-->
-            <a href={% url 'produto' %} class="btn bg-secondary col-md-2mt-3"><i class="fa fa-rotate-left"></i> Retornar</a>
+            <a href="{% url 'produto' %}" class="btn bg-secondary col-md-2 mt-3">
+                <i class="fa fa-rotate-left"></i> Retornar
+            </a>
         </div>
     <!--</form>-->
     </div>
@@ -53,4 +80,4 @@
 {% endblock %}
 {% block scripts %}
     <script src="{% static 'js/home.js' %}"></script>
-{%endblock %}
+{% endblock %}

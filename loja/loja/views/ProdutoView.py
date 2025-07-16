@@ -79,23 +79,30 @@ def edit_produto_postback(request, id=None):
     return redirect("/produto")
 
 def details_produto_view(request, id=None):
-    produtos = Produto.objects.all()
-    if id is not None:
-        produtos = produtos.filter(id=id)
-    produto = produtos.first()
-    print(produto)
-    context = {'produto': produto}
-    return render(request, template_name='produto/produto-details.html', context=context,status=200)
+    produto = Produto.objects.filter(id=id).first()
+    fabricantes = Fabricante.objects.all()
+    categorias = Categoria.objects.all()
+
+    context = {
+        'produto': produto,
+        'fabricantes': fabricantes,
+        'categorias': categorias,
+    }
+    return render(request, template_name='produto/produto-details.html', context=context, status=200)
+
 
 def delete_produto_view(request, id=None):
-    produtos = Produto.objects.all()
-    if id is not None:
-        produtos = produtos.filter(id=id)
-    produto = produtos.first()
-    print(produto)
-    context = {'produto': produto}
-    return render(request, template_name='produto/produto-delete.html', context=context,
-    status=200)
+    produto = Produto.objects.filter(id=id).first()
+    fabricantes = Fabricante.objects.all()
+    categorias = Categoria.objects.all()
+
+    context = {
+        'produto': produto,
+        'fabricantes': fabricantes,
+        'categorias': categorias
+    }
+    return render(request, 'produto/produto-delete.html', context=context, status=200)
+
 
 def delete_produto_postback(request, id=None):
     if request.method == 'POST':
@@ -112,43 +119,50 @@ def delete_produto_postback(request, id=None):
     
 def create_produto_view(request, id=None):
     if request.method == 'POST':
-        produto = request.POST.get("Produto")
-        destaque = request.POST.get("destaque")
-        promocao = request.POST.get("promocao")
+        nome = request.POST.get("nome")  # campo correto do model
+        destaque = request.POST.get("destaque") is not None
+        promocao = request.POST.get("promocao") is not None
         msgPromocao = request.POST.get("msgPromocao")
         preco = request.POST.get("preco")
-        image = request.POST.get("image")
-        print(produto)
-        print(destaque)
-        print(promocao)
-        print(msgPromocao)
-        print(preco)
-        print(image)
+        categoria_id = request.POST.get("CategoriaFk")
+        fabricante_id = request.POST.get("FabricanteFk")
+
         try:
             obj_produto = Produto()
-            obj_produto.Produto = produto
-            obj_produto.destaque = (destaque is not None)
-            obj_produto.promocao = (promocao is not None)
-            if msgPromocao is not None:
-                obj_produto.msgPromocao = msgPromocao
-            obj_produto.preco = 0
-            if (preco is not None) and ( preco != ""):
-                obj_produto.preco = preco
+            obj_produto.nome = nome
+            obj_produto.destaque = destaque
+            obj_produto.promocao = promocao
+            obj_produto.msgPromocao = msgPromocao or ""
+            obj_produto.preco = preco or 0
             obj_produto.criado_em = timezone.now()
             obj_produto.alterado_em = obj_produto.criado_em
-            if request.FILES is not None:
-                num_files = len(request.FILES.getlist('image'))
-                if num_files > 0:
-                    imagefile = request.FILES['image']
-                    print(imagefile)
-                    fs = FileSystemStorage()
-                    filename = fs.save(imagefile.name, imagefile)
-                    if (filename is not None) and (filename != ""):
-                        obj_produto.image = filename
-            obj_produto.save()
-            print("Produto %s salvo com sucesso" % produto)
-        except Exception as e:
-            print("Erro inserindo produto: %s" % e)
-        return redirect("/produto")
-    return render(request, template_name='produto/produto-create.html',status=200)
 
+            # Relaciona Categoria e Fabricante
+            if categoria_id and categoria_id != "-1":
+                obj_produto.categoria = Categoria.objects.filter(id=categoria_id).first()
+            if fabricante_id and fabricante_id != "-1":
+                obj_produto.fabricante = Fabricante.objects.filter(id=fabricante_id).first()
+
+            if 'image' in request.FILES:
+                imagefile = request.FILES['image']
+                fs = FileSystemStorage()
+                filename = fs.save(imagefile.name, imagefile)
+                obj_produto.image = filename
+
+            obj_produto.save()
+            print("Produto salvo com sucesso")
+        except Exception as e:
+            import traceback
+            print("Erro inserindo produto:")
+            traceback.print_exc()
+
+        return redirect("/produto")
+    
+    # Se GET, enviar fabricantes e categorias para o form de criação
+    fabricantes = Fabricante.objects.all()
+    categorias = Categoria.objects.all()
+    context = {
+        'fabricantes': fabricantes,
+        'categorias': categorias,
+    }
+    return render(request, template_name='produto/produto-create.html', context=context, status=200)
