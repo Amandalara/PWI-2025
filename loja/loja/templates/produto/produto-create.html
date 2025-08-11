@@ -7,40 +7,61 @@
 {% block content %}
 <div id="content">
     <div class="container">
-        <form method="POST" enctype="multipart/form-data" action= "/produto/create" >
+        <form method="POST" enctype="multipart/form-data" action="/produto/create">
             {% csrf_token %}
             <div class="row">
-                <!--<input type="hidden" value="{{produto.id}}" name="id">-->
-                <h5 for="Produto" class="col-md-2">Produto</h5>
-                <input name="produto">
+                <h5 for="nome" class="col-md-2">Produto</h5>
+                <input name="nome" id="nome" class="form-control col-md-6" required>
             </div>
-            <div class="row">
+            <div class="row mt-2">
                 <div class="col-md-2">
-                    <input type="checkbox" name="destaque" >
+                    <input type="checkbox" name="destaque" id="destaque">
                     <label for="destaque">Destaque</label>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mt-2">
                 <div class="col-md-2">
-                    <input type="checkbox" name="promocao" >
+                    <input type="checkbox" name="promocao" id="promocao">
                     <label for="promocao">Promoção</label>
-                    </div>
                 </div>
-            <div class="row">
+            </div>
+            <div class="row mt-2">
                 <label for="msgPromocao" class="col-md-2">Msg Promoção</label>
-                <input name="msgPromocao">
+                <input name="msgPromocao" id="msgPromocao" class="form-control col-md-6">
             </div>
             <div class="row mt-2">
                 <label for="preco" class="col-md-2">Preço</label>
-                <input name="preco">
+                <input name="preco" id="preco" type="number" step="0.01" min="0" class="form-control col-md-6">
+            </div>
+            <div class="row mt-2">
+                <label for="CategoriaFk" class="col-md-2">Categoria</label>
+                <select name="CategoriaFk" id="CategoriaFk" class="form-control col-md-6">
+                    <option value="-1">-----</option>
+                    {% for cate in categorias %}
+                        <option value="{{ cate.id }}">{{ cate.Categoria }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="row mt-2">
+                <label for="FabricanteFk" class="col-md-2">Fabricante</label>
+                <select name="FabricanteFk" id="FabricanteFk" class="form-control col-md-6">
+                    <option value="-1">-----</option>
+                    {% for fabri in fabricantes %}
+                        <option value="{{ fabri.id }}">{{ fabri.Fabricante }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="row mt-2">
                 <label for="image" class="col-md-2">Imagem</label>
-                <input type="file" name="image">
+                <input type="file" name="image" id="image" class="form-control-file col-md-6">
             </div>
-            <div class="row">
-                <button type="submit" class="btn btn-danger col-md-2 mt-3 mr-2"><iclass="fa fa-check"></i> Inserir</button>
-                <a href={% url 'produto' %} class="btn bg-secondary col-md-2 mt-3"><ilass="fa fa-rotate-left"></i> Retornar</a>
+            <div class="row mt-3">
+                <button type="submit" class="btn btn-danger col-md-2 mr-2">
+                    <i class="fa fa-check"></i> Inserir
+                </button>
+                <a href="{% url 'produto' %}" class="btn bg-secondary col-md-2">
+                    <i class="fa fa-rotate-left"></i> Retornar
+                </a>
             </div>
         </form>
     </div>
