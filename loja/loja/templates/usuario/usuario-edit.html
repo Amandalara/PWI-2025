@@ -16,6 +16,10 @@
             {{ f.label }}
             {{ f }}
         </div>
+        {% for error in f.errors %}
+        <div class="invalid-feedback" style="display: initial;">{{ error }}
+        </div>
+        {% endfor %}
         {% else %}
         {{ f }}
         {% endif %}
@@ -25,12 +29,16 @@
         <div class="form-group col-md-6">
         {{ f.label }}
         {{ f }}
+        {% for error in f.errors %}
+        <div class="invalid-feedback" style="display: initial;">{{ error }}</div>
+        {% endfor %}
         </div>
         {% else %}
         {{ f }}
         {% endif %}
     {% endfor %}
     </div>
+    <button type="submit" class="btn btn-primary">Salvar</button>
 </form>
 </div>
 </div>
