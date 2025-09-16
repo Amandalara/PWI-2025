@@ -12,7 +12,8 @@ def list_usuario_view(request, id=None):
 
 def edit_usuario_view(request):
     usuario = get_object_or_404(Usuario, user=request.user)
-    
+    message = None
+
     if request.method == 'POST':
         usuarioForm = UserUsuarioForm(request.POST, instance=usuario)
         userForm = UserForm(request.POST, instance=request.user)
@@ -24,16 +25,22 @@ def edit_usuario_view(request):
         if usuarioForm.is_valid() and userForm.is_valid() and not email_existe:
             usuarioForm.save()
             userForm.save()
-            return redirect('nome_da_url_de_sucesso')  
+            message = {'type': 'success', 'text': 'Dados atualizados com sucesso'}
+            return redirect('nome_da_url_de_sucesso')
         else:
             if email_existe:
-                userForm.add_error('email', 'Este e-mail já está em uso por outro usuário.')
+                message = {'type': 'warning', 'text': 'E-mail já usado'}
+            else:
+                message = {'type': 'danger', 'text': 'Dados inválidos'}
     else:
+        # Aqui inicializa os formulários para GET, preenchidos com os dados atuais
         usuarioForm = UserUsuarioForm(instance=usuario)
         userForm = UserForm(instance=request.user)
 
     context = {
         'usuarioForm': usuarioForm,
-        'userForm': userForm
+        'userForm': userForm,
+        'message': message
     }
     return render(request, 'usuario/usuario-edit.html', context=context, status=200)
+
